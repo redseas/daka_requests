@@ -86,12 +86,27 @@ def qiandao(key, code):
     return str(b)
 
 
+def all_data():
+    # 1.连接
+
+    conn = pymysql.connect(host='localhost', user='daka', password='1234c', db='daka')
+    sql_query = 'SELECT * FROM fall'
+    table = pd.read_sql(sql_query, con=conn)
+    conn.close()
+    table=table.drop_duplicates(['stu_num','stu_name'],keep='last')
+    # print(df)
+    return table
+
 def push(text):
-    key = "PDU3765TBs56dzcIw5d6WcV4Qe7qqo9MNTdREyuB"
+    key="PDU3765TBs56dzcIw5d6WcV4Qe7qqo9MNTdREyuB"
     # text="无内容"
-    url = f"https://api2.pushdeer.com/message/push?pushkey={key}&text={text}"
+    url=f"https://api2.pushdeer.com/message/push?pushkey={key}&text={text}"
     requests.get(url)
-# pushdeer提醒
+
+def line():
+    table= all_data()
+    line = table.shape[0]
+    return line
 
 
 def pushdeer(push_key, sendnews):
@@ -114,17 +129,7 @@ def send_pusher(times):
     return "send_pusher操作结束"
 
 
-def all_data():
-    # 1.连接
 
-    conn = pymysql.connect(host='localhost', user='daka',
-                           password='1234c', db='daka')
-    sql_query = 'SELECT * FROM user'
-    table = pd.read_sql(sql_query, con=conn)
-    conn.close()
-    table.drop_duplicates(['stu_num', 'stu_name'], keep='last')
-    # print(df)
-    return table
 
 
 # 插入数据
@@ -210,72 +215,87 @@ def recode(a):
     print("进入下一个打卡")
 
 
-lis = []
-table = all_data()
-print(f"一共{str(table.shape[0])}个账号，开始打卡————————")
-for i in range(table.shape[0]):
-    data = table.loc[i]
-    lis.append(dict(data))
-for i in lis:
-    a = "fall"
-    # 姓名
-    stu_name = str(i['stu_name'])
-    # 学号
-    stu_xgh = str(i['stu_num'])
-    # 密码
-    password = str(i['password'])
-    stu_password = md5(password.encode('utf8')).hexdigest()
-    # JWD = str(i['JWD'])
-    JWD = str(i['jwd'])
-    Place = str(i['place'])
-    to_addr = str(i['email'])
-    # phone = str(int(i['phone']))
-    print("打卡数据载入成功！")
-    print("获取uid中----")
-    stu_uid = uid()
-    if stu_uid:
-        print(stu_name+"UID："+stu_uid)
-        stu_sign_password = str(i['password'])  # 登录密码
-        # print(stu_name, stu_password, stu_xgh, stu_uid, JWD, Place)
-    else:
-        print("uid获取失败")
-        a = 'wrong'
 
-    # 运行一次打卡情况检查，否则验证码错误
-    try:
-        jiancha()
-        a = "success"
-    except:
-        a = "wrong"
-    # 运行打卡程序
-    try:
-        print("-------------执行打卡程序中-------------")
-        # 验证码识别
-        key, code = dddocr()
-        # 打卡脚本
-        time.sleep(5)
-        qian = qiandao(key, code)
-        if qian == "响应成功" or qian == "今天你已经自诊打过卡了！":
-            print(f"{stu_name}今日打卡已打卡")
+
+
+
+c = 0
+if line() ==0:
+    import datetime
+    now_time=str(datetime.datetime.now())
+    push(text=now_time+" 全部打卡完成👍")
+
+while line() != 0:
+    lis = []
+    table = all_data()
+    print(f"一共剩余{str(table.shape[0])}个打卡失败账号————————")
+    for i in range(table.shape[0]):
+        data = table.loc[i]
+        lis.append(dict(data))
+    for i in lis:
+        a = "fall"
+        # 姓名
+        stu_name = str(i['stu_name'])
+        # 学号
+        stu_xgh = str(i['stu_num'])
+        # 密码
+        password = str(i['password'])
+        stu_password = md5(password.encode('utf8')).hexdigest()
+        # JWD = str(i['JWD'])
+        JWD = str(i['jwd'])
+        Place = str(i['place'])
+        to_addr = str(i['email'])
+        # phone = str(int(i['phone']))
+        print("打卡数据载入成功！")
+        print("获取uid中----")
+        stu_uid = uid()
+        if stu_uid:
+            print(stu_name+"UID："+stu_uid)
+            stu_sign_password = str(i['password'])  # 登录密码
+            # print(stu_name, stu_password, stu_xgh, stu_uid, JWD, Place)
         else:
-            m = 0
-            while qian == "操怍失败，验证码错误":
-                m += 1
-                print(stu_name+"|打卡出现问题："+qian+"|重试识别验证码第"+str(m)+"次")
-                if m <= 4:
-                    jiancha()
-                    key, code = dddocr()
-                    time.sleep(5)
-                    qian = qiandao(key, code)
-                    a="success"
-                else:
-                    qian = "注意！请自己手动去打卡吧|https://wxyqfk.zhxy.net/?yxdm=10623&from=singlemessage#/clockIn"
+            print("uid获取失败")
+            a = 'wrong'
 
-    except:
-        print("*********遇见问题*********")
-        a = "wrong"
+        # 运行一次打卡情况检查，否则验证码错误
+        try:
+            jiancha()
+            a = "success"
+        except:
+            a = "wrong"
+        # 运行打卡程序
+        try:
+            print("-------------执行打卡程序中-------------")
+            # 验证码识别
+            key, code = dddocr()
+            # 打卡脚本
+            time.sleep(5)
+            qian = qiandao(key, code)
+            if qian == "响应成功" or qian == "今天你已经自诊打过卡了！":
+                print(f"{stu_name}今日打卡已打卡")
+            else:
+                m = 0
+                while qian == "操怍失败，验证码错误":
+                    m += 1
+                    print(stu_name+"|打卡出现问题："+qian+"|重试识别验证码第"+str(m)+"次")
+                    if m <= 4:
+                        jiancha()
+                        key, code = dddocr()
+                        time.sleep(5)
+                        qian = qiandao(key, code)
+                        a="success"
+                    else:
+                        qian = "注意！请自己手动去打卡吧|https://wxyqfk.zhxy.net/?yxdm=10623&from=singlemessage#/clockIn"
 
-    recode(a)  # 记录
-    randomInt = random.randint(10, 30)
-    print("将等待：" + str(randomInt) + " 秒")
-    time.sleep(randomInt)
+        except:
+            print("*********遇见问题*********")
+            a = "wrong"
+
+        recode(a)  # 记录
+        randomInt = random.randint(10, 30)
+        print("将等待：" + str(randomInt) + " 秒")
+        time.sleep(randomInt)
+    if c<=3:
+        c+=1
+    else:
+        break
