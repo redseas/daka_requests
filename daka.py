@@ -232,15 +232,18 @@ for i in lis:
     # phone = str(int(i['phone']))
     print("打卡数据载入成功！")
     print("获取uid中----")
-    stu_uid = uid()
-    if stu_uid:
-        print(stu_name+"UID："+stu_uid)
-        stu_sign_password = str(i['password'])  # 登录密码
-        # print(stu_name, stu_password, stu_xgh, stu_uid, JWD, Place)
-    else:
-        print("uid获取失败")
+    try:
+        stu_uid = uid()
+        if stu_uid:
+            print(stu_name+"UID："+stu_uid)
+            stu_sign_password = str(i['password'])  # 登录密码
+            # print(stu_name, stu_password, stu_xgh, stu_uid, JWD, Place)
+        else:
+            print("uid调用频繁")
+            a = 'wrong'
+    except:
+        print("获取uid失败")
         a = 'wrong'
-
     # 运行一次打卡情况检查，否则验证码错误
     try:
         jiancha()
