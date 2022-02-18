@@ -54,26 +54,22 @@ def email_send(stu_xgh, to_addr, password):
 
     # 用于构建邮件头
 
-    email = '❗❗❗❗请注意这个消息，青柠疫服打卡系统反馈信息，你的账号【{0}】密码【{1}】或者密码错误，已删除，请重新上传，地址(复制到浏览器打开)：http://iridescent.work/qnyf.html ！'.format(
-        stu_xgh, password)
+    email = ""
 
     # 发信方的信息：发信邮箱，QQ 邮箱授权码
-    from_addr = 'qiandao-assistant@qq.com'
-    password = 'jujcniindjfgbgdd'
-
-    # 收信方邮箱
-    # to_addr = '969738999@qq.com'
+    from_addr = 'qnyfMsg@qq.com'
+    password = 'eojparquwepvddia'
 
     # 发信服务器
     smtp_server = 'smtp.qq.com'
 
     # 邮箱正文内容，第一个参数为内容，第二个参数为格式(plain 为纯文本)，第三个参数为编码
-    msg = MIMEText(email, 'plain', 'utf-8')
+    msg = MIMEText(msg, 'plain', 'utf-8')
 
     # 邮件头信息
     msg['From'] = Header(from_addr)
     msg['To'] = Header(to_addr)
-    msg['Subject'] = Header(str(datetime.date.today()) + '青柠打卡结果反馈')
+    msg['Subject'] = Header(str(datetime.date.today()) + '青柠打卡反馈')
 
     # 开启发信服务，这里使用的是加密传输
     server = smtplib.SMTP_SSL(smtp_server)
@@ -121,10 +117,17 @@ def loc(location):
     data = requests.get(base_url+location, headers=random.choice(headers))
     # print(type(data))
     inf = data.json()
-    jwd_x = inf['detail']['pointx']
-    jwd_y = inf['detail']['pointy']
-    JWD = jwd_y+','+jwd_x
-    return JWD
+    try:
+        jwd_x = inf['detail']['pointx']
+        jwd_y = inf['detail']['pointy']
+        JWD = jwd_y+','+jwd_x
+        return JWD
+    except:
+        print("地址问题")
+        email_send(msg="qnyf通知，请注意您的地址是否正确比如：四川省成都市xx区，如果是机器误报请忽略，系统已自动生成随机jwd，但是请您自己重新上传信息以确保信息准确，否则可能无法打卡❤")
+        JWD =""
+        return JWD
+
 
 # print(loc("河南省周口市"))
 
@@ -197,7 +200,7 @@ if __name__ == '__main__':
             print(stu_name+":"+correct)
             if correct == "学号或密码错误":
                 print("学号或密码错误")
-                email_send(stu_xgh, to_addr, password)
+                email_send(stu_xgh, to_addr, password,msg="qnyf通知：学号或者密码错误，如果是机器误报请忽略")
                 de_one(stu_name)
             time.sleep(4)
             print("4秒后检测下一个")
