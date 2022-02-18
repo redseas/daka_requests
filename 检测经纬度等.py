@@ -1,13 +1,15 @@
-#!/usr/bin/env python3
-# _*_ coding:utf-8 _*_
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 '''
-@File    :   
-@Time    :   2022/02/02 15:06:18
-@Author  :   chou 
-@Version :   1.0
-@Contact :   chou2079986882@gmail.com
-@Desc    :   None
+@File    : 检测经纬度等.py
+@Time    : 2022/02/18 22:13:19
+@Author  : chou
+@Contact : chou2079986882@gmail.com
+@Version : 0.1
+@Desc    : None
 '''
+
+
 
 
 import requests
@@ -141,9 +143,8 @@ def all_data():
     return table
 
 def change_jwd():
-    def all_data():
-    # 1.连接
-    conn = pymysql.connect(host='localhost', user='daka', password='1234c', db='daka')
+    conn = pymysql.connect(host='localhost', user='daka',
+                           password='1234c', db='daka')
     sql = "INSERT INTO fall(stu_name,stu_num,password,email,jwd,place) VALUES('%s','%s','%s','%s','%s','%s')" % (
         stu_name, stu_xgh, password, to_addr, jwd, place)
     table = pd.read_sql(sql, con=conn)
@@ -186,4 +187,5 @@ if __name__ == '__main__':
             de_one(stu_name)
         time.sleep(4)
         print("4秒后检测下一个")
+        sys.exit()
 
