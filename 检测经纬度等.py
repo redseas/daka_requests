@@ -9,9 +9,6 @@
 @Desc    : None
 '''
 
-
-
-
 import requests
 import os
 import sys
@@ -23,10 +20,11 @@ import pymysql
 import re
 import pandas as pd
 import random
-
+print("检测程序开始运行")
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
 }
+
 
 def login():
     data_login = {
@@ -39,13 +37,13 @@ def login():
     login_url = "https://yqfkapi.zhxy.net/api/User/CheckUser"
     # 登陆
     s = requests.Session()
-    res=s.post(login_url, json=data_login, headers=headers)
-    
+    res = s.post(login_url, json=data_login, headers=headers)
+
     return res
 
 
 # 发邮箱提醒账号密码错误
-def email_send(stu_xgh, to_addr,password):
+def email_send(stu_xgh, to_addr, password):
     # 密码错误反馈
     import smtplib
     from email.mime.text import MIMEText
@@ -56,8 +54,9 @@ def email_send(stu_xgh, to_addr,password):
 
     # 用于构建邮件头
 
-    email = '❗❗❗❗请注意这个消息，青柠疫服打卡系统反馈信息，你的账号【{0}】密码【{1}】或者密码错误，已删除，请重新上传，地址(复制到浏览器打开)：http://iridescent.work/qnyf.html ！'.format(stu_xgh,password)
- 
+    email = '❗❗❗❗请注意这个消息，青柠疫服打卡系统反馈信息，你的账号【{0}】密码【{1}】或者密码错误，已删除，请重新上传，地址(复制到浏览器打开)：http://iridescent.work/qnyf.html ！'.format(
+        stu_xgh, password)
+
     # 发信方的信息：发信邮箱，QQ 邮箱授权码
     from_addr = 'qiandao-assistant@qq.com'
     password = 'jujcniindjfgbgdd'
@@ -90,9 +89,10 @@ def email_send(stu_xgh, to_addr,password):
 
 
 def de_one(stu_name):
-    #删除错误
+    # 删除错误
     # 1.连接
-    conn = pymysql.connect(host='localhost', user='daka', password='1234c', db='daka')
+    conn = pymysql.connect(host='localhost', user='daka',
+                           password='1234c', db='daka')
     # print(conn)
     if conn:
         print("连接数据库成功")
@@ -115,7 +115,7 @@ def loc(location):
     headers1 = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36 Edg/90.0.818.56"}
     headers2 = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36"}
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36"}
     headers = [headers1, headers2]
     base_url = "https://apis.map.qq.com/jsapi?qt=geoc&addr="
     data = requests.get(base_url+location, headers=random.choice(headers))
@@ -129,18 +129,18 @@ def loc(location):
 # print(loc("河南省周口市"))
 
 
-
-
 def all_data():
     # 1.连接
 
-    conn = pymysql.connect(host='localhost', user='daka', password='1234c', db='daka')
+    conn = pymysql.connect(host='localhost', user='daka',
+                           password='1234c', db='daka')
     sql_query = 'SELECT * FROM fall'
     table = pd.read_sql(sql_query, con=conn)
     conn.close()
-    table.drop_duplicates(['stu_num','stu_name'],keep='last')
+    table.drop_duplicates(['stu_num', 'stu_name'], keep='last')
     # print(df)
     return table
+
 
 def change_jwd():
     conn = pymysql.connect(host='localhost', user='daka',
@@ -149,7 +149,7 @@ def change_jwd():
         stu_name, stu_xgh, password, to_addr, jwd, place)
     table = pd.read_sql(sql, con=conn)
     conn.close()
-    table.drop_duplicates(['stu_num','stu_name'],keep='last')
+    table.drop_duplicates(['stu_num', 'stu_name'], keep='last')
     # print(df)
     return table
 
@@ -167,25 +167,24 @@ if __name__ == '__main__':
         stu_xgh = str(i['stu_num'])
         # 密码
         password = str(i['password'])
-        email=str(i['email'])
-        to_addr=email
-        place=str(i["place"])
-        jwd=str(i["jwd"])
-        #验证jwd
-        if not re.match(r"3\d{1}.\d{6},1\d{2}.\d{6}",jwd):
-            jwd=loc(place)
+        email = str(i['email'])
+        to_addr = email
+        place = str(i["place"])
+        jwd = str(i["jwd"])
+        # 验证jwd
+        if not re.match(r"3\d{1}.\d{6},1\d{2}.\d{6}", jwd):
+            jwd = loc(place)
             change_jwd()
         stu_password = md5(password.encode('utf8')).hexdigest()
-        res=login()
+        res = login()
 
         # print(res.json)
-        correct=res.json()["info"]
+        correct = res.json()["info"]
         print(stu_name+":"+correct)
-        if correct=="学号或密码错误":
+        if correct == "学号或密码错误":
             print("学号或密码错误")
-            email_send(stu_xgh,to_addr,password)
+            email_send(stu_xgh, to_addr, password)
             de_one(stu_name)
         time.sleep(4)
         print("4秒后检测下一个")
         sys.exit()
-
