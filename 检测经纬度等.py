@@ -143,15 +143,27 @@ def all_data():
 
 
 def change_jwd():
+    # 1.连接
     conn = pymysql.connect(host='localhost', user='daka',
                            password='1234c', db='daka')
-    sql = "INSERT INTO fall(stu_name,stu_num,password,email,jwd,place) VALUES('%s','%s','%s','%s','%s','%s')" % (
+    # print(conn)
+    if conn:
+        print("连接数据库成功")
+    else:
+        print('连接数据库失败')
+    # 2.创建游标
+    cursor = conn.cursor()
+
+    # 使用 execute() 方法执行 SQL，如果表存在则删除
+    sql_query2 = f"delete from user where stu_name='{stu_name}'"
+    cursor.execute(sql_query2)
+
+    sql = "INSERT INTO user(stu_name,stu_num,password,email,jwd,place) VALUES('%s','%s','%s','%s','%s','%s')" % (
         stu_name, stu_xgh, password, to_addr, jwd, place)
-    table = pd.read_sql(sql, con=conn)
-    conn.close()
-    table.drop_duplicates(['stu_num', 'stu_name'], keep='last')
-    # print(df)
-    return table
+    cursor.execute(sql)
+
+    cursor.close()
+    print("执行完成")
 
 
 if __name__ == '__main__':
@@ -175,16 +187,20 @@ if __name__ == '__main__':
         if not re.match(r"3\d{1}.\d{6},1\d{2}.\d{6}", jwd):
             jwd = loc(place)
             change_jwd()
+            print("jwd自动更新成功")
         stu_password = md5(password.encode('utf8')).hexdigest()
-        res = login()
+        try:
+            res = login()
 
-        # print(res.json)
-        correct = res.json()["info"]
-        print(stu_name+":"+correct)
-        if correct == "学号或密码错误":
-            print("学号或密码错误")
-            email_send(stu_xgh, to_addr, password)
-            de_one(stu_name)
-        time.sleep(4)
-        print("4秒后检测下一个")
-        sys.exit()
+            # print(res.json)
+            correct = res.json()["info"]
+            print(stu_name+":"+correct)
+            if correct == "学号或密码错误":
+                print("学号或密码错误")
+                email_send(stu_xgh, to_addr, password)
+                de_one(stu_name)
+            time.sleep(4)
+            print("4秒后检测下一个")
+            # sys.exit()
+        except:
+            print("发生错误")
