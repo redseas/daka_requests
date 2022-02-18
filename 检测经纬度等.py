@@ -43,7 +43,7 @@ def login():
 
 
 # 发邮箱提醒账号密码错误
-def email_send(stu_xgh, to_addr, password,msg):
+def email_send(msg):
     # 密码错误反馈
     import smtplib
     from email.mime.text import MIMEText
@@ -53,8 +53,6 @@ def email_send(stu_xgh, to_addr, password,msg):
     from email.header import Header
 
     # 用于构建邮件头
-
-    email = ""
 
     # 发信方的信息：发信邮箱，QQ 邮箱授权码
     from_addr = 'qnyfMsg@qq.com'
@@ -125,7 +123,7 @@ def loc(location):
     except:
         print("地址问题")
         email_send(msg="qnyf通知，请注意您的地址是否正确比如：四川省成都市xx区，如果是机器误报请忽略，系统已自动生成随机jwd，但是请您自己重新上传信息以确保信息准确，否则可能无法打卡❤")
-        JWD =""
+        JWD ="30.777065,103.955040"
         return JWD
 
 
@@ -200,7 +198,7 @@ if __name__ == '__main__':
             print(stu_name+":"+correct)
             if correct == "学号或密码错误":
                 print("学号或密码错误")
-                email_send(stu_xgh, to_addr, password,msg="qnyf通知：学号或者密码错误，如果是机器误报请忽略")
+                email_send(msg="qnyf通知：学号或者密码错误，如果是机器误报请忽略")
                 de_one(stu_name)
             time.sleep(4)
             print("4秒后检测下一个")
