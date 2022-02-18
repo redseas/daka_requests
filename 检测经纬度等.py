@@ -43,7 +43,7 @@ def login():
 
 
 # 发邮箱提醒账号密码错误
-def email_send(stu_xgh, to_addr, password):
+def email_send(stu_xgh, to_addr, password,msg):
     # 密码错误反馈
     import smtplib
     from email.mime.text import MIMEText
