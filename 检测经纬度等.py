@@ -134,7 +134,7 @@ def all_data():
 
     conn = pymysql.connect(host='localhost', user='daka',
                            password='1234c', db='daka')
-    sql_query = 'SELECT * FROM fall'
+    sql_query = 'SELECT * FROM user'
     table = pd.read_sql(sql_query, con=conn)
     conn.close()
     table.drop_duplicates(['stu_num', 'stu_name'], keep='last')
