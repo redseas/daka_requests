@@ -299,7 +299,7 @@ for i in lis:
                     jiancha()
                     key, code = dddocr()
                     time.sleep(5)
-                    qian = qiandao(key, code)
+                    qian = qiandao(key, code,STATUS)
                     a = "success"
                 else:
                     qian = "注意！请自己手动去打卡吧|https://wxyqfk.zhxy.net/?yxdm=10623&from=singlemessage#/clockIn"
