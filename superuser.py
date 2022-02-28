@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 '''
-@File    : daka.py
-@Time    : 2022/02/28 09:21:59
+@File    : superuser.py
+@Time    : 2022/02/28 09:21:43
 @Author  : chou
 @Contact : chou2079986882@gmail.com
 @Version : 0.1
@@ -19,17 +19,8 @@ from hashlib import md5
 import random
 import pandas as pd
 import pymysql
-
-#先运行优先级高的
-import os 
-try:
-    os.system("python superuser.py")
-    print("高优先级任务运成功------")
-except:
-    print("高优先级任务运行失败")
 global s
 s = requests.Session()
-
 
 # 打卡信息检查（务必要这一个步骤）
 
@@ -140,7 +131,7 @@ def all_data():
 
     conn = pymysql.connect(host='localhost', user='daka',
                            password='1234c', db='daka')
-    sql_query = 'SELECT * FROM user'
+    sql_query = 'SELECT * FROM superuser'
     table = pd.read_sql(sql_query, con=conn)
     conn.close()
     table.drop_duplicates(['stu_num', 'stu_name'], keep='last')
@@ -291,7 +282,7 @@ for i in lis:
                     key, code = dddocr()
                     time.sleep(5)
                     qian = qiandao(key, code)
-                    a = "success"
+                    a="success"
                 else:
                     qian = "注意！请自己手动去打卡吧|https://wxyqfk.zhxy.net/?yxdm=10623&from=singlemessage#/clockIn"
 
