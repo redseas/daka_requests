@@ -23,6 +23,7 @@ import pymysql
 #先运行优先级高的
 import os 
 try:
+    print("开始运行高优先级任务----")
     os.system("python superuser.py")
     print("高优先级任务运成功------")
 except:
