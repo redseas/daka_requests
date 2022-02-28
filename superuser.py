@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 '''
-@File    : superuser.py
-@Time    : 2022/02/28 09:21:43
+@File    : daka.py
+@Time    : 2022/02/28 09:21:59
 @Author  : chou
 @Contact : chou2079986882@gmail.com
 @Version : 0.1
@@ -10,6 +10,7 @@
 '''
 
 
+import re
 import openpyxl
 import sys
 import time
@@ -19,8 +20,18 @@ from hashlib import md5
 import random
 import pandas as pd
 import pymysql
+
+#先运行优先级高的
+#import os 
+#try:
+#    print("开始运行高优先级任务----")
+#    os.system("python superuser.py")
+#    print("高优先级任务运成功------")
+#except:
+#    print("高优先级任务运行失败")
 global s
 s = requests.Session()
+
 
 # 打卡信息检查（务必要这一个步骤）
 
@@ -81,7 +92,7 @@ def qiandao(key, code):
         "A4": "无",
         "A2": "全部正常",
         "A3": Place,
-        "A11": "在校",
+        "A11": STATUS,
         "A12": "未实习",
         "A13": "低风险区",
         "YXDM": "10623",
@@ -240,6 +251,13 @@ for i in lis:
     # JWD = str(i['JWD'])
     JWD = str(i['jwd'])
     Place = str(i['place'])
+    STATUS="在校"
+    if re.match(r".*?西华大学.*?",Place):
+        print("在校")
+        STATUS="在校"
+    else:
+        STATUS="不在校"
+
     to_addr = str(i['email'])
     # phone = str(int(i['phone']))
     print("打卡数据载入成功！")
@@ -282,7 +300,7 @@ for i in lis:
                     key, code = dddocr()
                     time.sleep(5)
                     qian = qiandao(key, code)
-                    a="success"
+                    a = "success"
                 else:
                     qian = "注意！请自己手动去打卡吧|https://wxyqfk.zhxy.net/?yxdm=10623&from=singlemessage#/clockIn"
 

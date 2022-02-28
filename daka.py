@@ -22,13 +22,13 @@ import pandas as pd
 import pymysql
 
 #先运行优先级高的
-import os 
-try:
-    print("开始运行高优先级任务----")
-    os.system("python superuser.py")
-    print("高优先级任务运成功------")
-except:
-    print("高优先级任务运行失败")
+#import os 
+#try:
+#    print("开始运行高优先级任务----")
+#    os.system("python superuser.py")
+#    print("高优先级任务运成功------")
+#except:
+#    print("高优先级任务运行失败")
 global s
 s = requests.Session()
 
@@ -80,7 +80,7 @@ def dddocr():
 # 主签到程序
 
 
-def qiandao(key, code,STATUS):
+def qiandao(key, code):
     data_health = {
         "UID": stu_uid,
         "UserType": "1",
@@ -299,7 +299,7 @@ for i in lis:
                     jiancha()
                     key, code = dddocr()
                     time.sleep(5)
-                    qian = qiandao(key, code,STATUS)
+                    qian = qiandao(key, code)
                     a = "success"
                 else:
                     qian = "注意！请自己手动去打卡吧|https://wxyqfk.zhxy.net/?yxdm=10623&from=singlemessage#/clockIn"
