@@ -10,6 +10,7 @@
 '''
 
 
+import re
 import openpyxl
 import sys
 import time
@@ -79,7 +80,7 @@ def dddocr():
 # 主签到程序
 
 
-def qiandao(key, code):
+def qiandao(key, code,STATUS):
     data_health = {
         "UID": stu_uid,
         "UserType": "1",
@@ -91,7 +92,7 @@ def qiandao(key, code):
         "A4": "无",
         "A2": "全部正常",
         "A3": Place,
-        "A11": "在校",
+        "A11": STATUS,
         "A12": "未实习",
         "A13": "低风险区",
         "YXDM": "10623",
@@ -250,6 +251,13 @@ for i in lis:
     # JWD = str(i['JWD'])
     JWD = str(i['jwd'])
     Place = str(i['place'])
+    STATUS="在校"
+    if re.match(r".*?西华大学.*?",Place):
+        print("在校")
+        STATUS="在校"
+    else:
+        STATUS="不在校"
+
     to_addr = str(i['email'])
     # phone = str(int(i['phone']))
     print("打卡数据载入成功！")
